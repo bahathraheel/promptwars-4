@@ -1,0 +1,183 @@
+{
+  "stadium": {
+    "name": "MetroArena 2026",
+    "capacity": 80000,
+    "address": "1 World Cup Blvd, North City, USA",
+    "emergency_number": "911",
+    "stadium_operations_number": "+1-800-STADIUM",
+    "timezone": "America/Chicago"
+  },
+  "gates": [
+    {
+      "id": "gate-1",
+      "name": "Gate 1 – North Main Entrance",
+      "location": { "section": "North", "coordinates": { "lat": 41.8819, "lng": -87.6278 } },
+      "accessible": true,
+      "accessible_features": ["step-free ramp", "tactile paving", "audio beacon", "wide turnstiles"],
+      "capacity_max": 8000,
+      "typical_open_time": "T-3h",
+      "nearest_parking": ["Lot A", "Lot B"],
+      "nearest_transit_stop": "North Station – Blue Line",
+      "concourse_level": 1,
+      "notes": "Primary accessible entrance; recommended for wheelchair users and families."
+    },
+    {
+      "id": "gate-2",
+      "name": "Gate 2 – East VIP",
+      "location": { "section": "East", "coordinates": { "lat": 41.8810, "lng": -87.6260 } },
+      "accessible": true,
+      "accessible_features": ["elevator access", "accessible drop-off zone"],
+      "capacity_max": 4000,
+      "typical_open_time": "T-3h",
+      "nearest_parking": ["VIP Lot V1"],
+      "nearest_transit_stop": "East Station – Red Line",
+      "concourse_level": 1,
+      "notes": "VIP and premium ticket holders. Priority lane available."
+    },
+    {
+      "id": "gate-3",
+      "name": "Gate 3 – South General",
+      "location": { "section": "South", "coordinates": { "lat": 41.8800, "lng": -87.6278 } },
+      "accessible": false,
+      "accessible_features": [],
+      "capacity_max": 12000,
+      "typical_open_time": "T-2.5h",
+      "nearest_parking": ["Lot C", "Lot D"],
+      "nearest_transit_stop": "South Station – Green Line",
+      "concourse_level": 1,
+      "notes": "High-volume general admission entrance. Auxiliary gate 3B opens when occupancy > 80%.",
+      "auxiliary_gate": {
+        "id": "gate-3b",
+        "name": "Gate 3B – South Auxiliary",
+        "accessible": true,
+        "accessible_features": ["step-free ramp"],
+        "capacity_max": 5000
+      }
+    },
+    {
+      "id": "gate-4",
+      "name": "Gate 4 – West Family",
+      "location": { "section": "West", "coordinates": { "lat": 41.8819, "lng": -87.6295 } },
+      "accessible": true,
+      "accessible_features": ["step-free ramp", "family changing rooms", "stroller parking"],
+      "capacity_max": 6000,
+      "typical_open_time": "T-3h",
+      "nearest_parking": ["Lot E"],
+      "nearest_transit_stop": "West Station – Purple Line",
+      "concourse_level": 1,
+      "notes": "Recommended for families with children and strollers."
+    }
+  ],
+  "accessible_routes": [
+    {
+      "id": "ar-1",
+      "name": "North Accessible Corridor",
+      "from": "gate-1",
+      "to": "accessible-seating-north",
+      "description": "Step-free route via elevator Bank A to Section N1–N8. Turn left after Gate 1 entrance, follow blue tactile stripe.",
+      "elevator_id": "elevator-A",
+      "estimated_minutes": 5
+    },
+    {
+      "id": "ar-2",
+      "name": "East Lift Route to Upper Deck",
+      "from": "gate-2",
+      "to": "accessible-seating-upper-east",
+      "description": "Take elevator Bank B (adjacent to Gate 2 concourse) to Level 3. Accessible seating rows AA–CC.",
+      "elevator_id": "elevator-B",
+      "estimated_minutes": 7
+    },
+    {
+      "id": "ar-3",
+      "name": "West Family Zone Route",
+      "from": "gate-4",
+      "to": "family-zone-west",
+      "description": "Follow green family signage from Gate 4 straight to Section W1–W4. Family zone has sensory-friendly spaces.",
+      "elevator_id": null,
+      "estimated_minutes": 4
+    }
+  ],
+  "elevators": [
+    { "id": "elevator-A", "location": "North Concourse, Level 1–3", "accessible": true, "status": "operational" },
+    { "id": "elevator-B", "location": "East Concourse, Level 1–3", "accessible": true, "status": "operational" },
+    { "id": "elevator-C", "location": "West Concourse, Level 1–2", "accessible": true, "status": "operational" }
+  ],
+  "medical_points": [
+    {
+      "id": "med-1",
+      "name": "North Medical Station",
+      "location": "Gate 1 Concourse, Level 1, Room N-101",
+      "accessible": true,
+      "staffed_by": "Paramedics + EMTs",
+      "open_hours": "T-3h to +2h post-match",
+      "capabilities": ["first aid", "AED", "wheelchair assistance", "heat stroke treatment"],
+      "nearest_gate": "gate-1"
+    },
+    {
+      "id": "med-2",
+      "name": "South Medical Station",
+      "location": "Gate 3 Concourse, Level 1, Room S-201",
+      "accessible": true,
+      "staffed_by": "EMTs",
+      "open_hours": "T-2h to +1.5h post-match",
+      "capabilities": ["first aid", "AED"],
+      "nearest_gate": "gate-3"
+    },
+    {
+      "id": "med-3",
+      "name": "Field-Level Trauma Bay",
+      "location": "Below South Stand, Tunnel Access",
+      "accessible": false,
+      "staffed_by": "Trauma surgeons + Paramedics",
+      "open_hours": "Match day only",
+      "capabilities": ["trauma care", "surgery prep", "stretcher transport"],
+      "nearest_gate": "gate-3",
+      "notes": "Not accessible to fans. For severe medical emergencies — staff use only."
+    }
+  ],
+  "food_courts": [
+    {
+      "id": "fc-1",
+      "name": "North Food Court",
+      "location": "Level 2, North Concourse",
+      "accessible": true,
+      "vendors": ["Burgers & Bites", "Vegan Corner", "Pizza Palace", "Halal Grill"],
+      "allergen_info_available": true,
+      "open_hours": "T-2h to full-time",
+      "nearest_gate": "gate-1"
+    },
+    {
+      "id": "fc-2",
+      "name": "South Food Court",
+      "location": "Level 1, South Concourse",
+      "accessible": true,
+      "vendors": ["Tacos & More", "Asian Fusion", "Ice Cream Station", "Sports Bar Bites"],
+      "allergen_info_available": true,
+      "open_hours": "T-2h to full-time",
+      "nearest_gate": "gate-3"
+    },
+    {
+      "id": "fc-3",
+      "name": "VIP Lounge Dining",
+      "location": "Level 1, East Wing, Room E-100",
+      "accessible": true,
+      "vendors": ["Gourmet Catering"],
+      "allergen_info_available": true,
+      "open_hours": "T-3h to full-time",
+      "nearest_gate": "gate-2",
+      "notes": "VIP ticket holders only."
+    }
+  ],
+  "accessible_restrooms": [
+    { "id": "ar-rest-1", "location": "Gate 1, Level 1 – beside North Medical", "accessible": true, "gender_neutral": true },
+    { "id": "ar-rest-2", "location": "Gate 2, Level 1 – East Concourse", "accessible": true, "gender_neutral": false },
+    { "id": "ar-rest-3", "location": "Gate 3, Level 1 – South Concourse", "accessible": true, "gender_neutral": true },
+    { "id": "ar-rest-4", "location": "Gate 4, Level 1 – West Family Zone", "accessible": true, "gender_neutral": true }
+  ],
+  "seating_sections": [
+    { "id": "north-lower", "name": "North Lower", "level": 1, "accessible_rows": ["AA", "AB"], "nearest_gate": "gate-1" },
+    { "id": "south-lower", "name": "South Lower", "level": 1, "accessible_rows": ["AA"], "nearest_gate": "gate-3" },
+    { "id": "east-upper", "name": "East Upper", "level": 3, "accessible_rows": ["AA", "BB"], "nearest_gate": "gate-2" },
+    { "id": "west-family", "name": "West Family Zone", "level": 1, "accessible_rows": ["FF", "GG"], "nearest_gate": "gate-4" }
+  ]
+}

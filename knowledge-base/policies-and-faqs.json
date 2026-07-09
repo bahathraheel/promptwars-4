@@ -1,0 +1,146 @@
+{
+  "safety_policies": [
+    {
+      "id": "policy-prohibited-items",
+      "title": "Prohibited Items",
+      "category": "security",
+      "summary": "Items not permitted inside the stadium.",
+      "details": [
+        "Outside food and beverages (sealed water bottles ≤500ml permitted)",
+        "Glass containers",
+        "Weapons of any kind",
+        "Drones or unmanned aerial vehicles",
+        "Laser pointers",
+        "Large bags (must be clear bag ≤12x6x12 inches or small clutch ≤4.5x6.5 inches)",
+        "Professional cameras with detachable lenses >6 inches",
+        "Fireworks or pyrotechnics",
+        "Flagpoles longer than 30cm",
+        "Animals (except certified service animals with documentation)"
+      ]
+    },
+    {
+      "id": "policy-emergency-evacuation",
+      "title": "Emergency Evacuation Procedure",
+      "category": "safety",
+      "summary": "What to do in case of an evacuation order.",
+      "details": [
+        "Listen for the official PA evacuation announcement (three long tones + voice instruction).",
+        "Follow illuminated green EXIT signs to your nearest exit.",
+        "Do not use elevators during fire evacuation — use stairs.",
+        "Accessible evacuation: proceed to the nearest Evacuation Refuge Area (ERA) marked with blue wheelchair sign; trained volunteers will assist.",
+        "Do not return to collect belongings.",
+        "Assembly point: North Plaza (Gate 1 exterior) or South Parking Lot (Gate 3 exterior).",
+        "Emergency services number: 911."
+      ]
+    },
+    {
+      "id": "policy-accessible-services",
+      "title": "Accessible Services Policy",
+      "category": "accessibility",
+      "summary": "Services available for fans with disabilities.",
+      "details": [
+        "Complimentary personal care assistant (PCA) ticket with any accessible seating purchase.",
+        "Assistive listening devices available at Guest Services (Gate 1 and Gate 3).",
+        "Sign-language interpretation available for PA announcements — request at Gate 1 Guest Services.",
+        "Sensory kits (ear defenders, fidget tools) available at Family Zone (Gate 4).",
+        "Companion restrooms available at all four gate concourses.",
+        "Wheelchair loan service at Gate 1 Guest Services (first-come, first-served, ID required)."
+      ]
+    },
+    {
+      "id": "policy-fan-code-of-conduct",
+      "title": "Fan Code of Conduct",
+      "category": "conduct",
+      "summary": "Expected behavior for all match attendees.",
+      "details": [
+        "Respect all other fans, staff, and players regardless of nationality, race, religion, gender, or disability.",
+        "Discriminatory chanting or gestures will result in immediate ejection.",
+        "No standing in seating areas unless in designated standing sections.",
+        "No excessive alcohol consumption — security may refuse entry to visibly intoxicated individuals.",
+        "Photography for personal use is permitted; commercial use requires press accreditation."
+      ]
+    },
+    {
+      "id": "policy-lost-and-found",
+      "title": "Lost & Found",
+      "category": "services",
+      "summary": "How to report and retrieve lost items.",
+      "details": [
+        "Lost & Found office located at Gate 1 Guest Services, open T-3h to +3h post-match.",
+        "Lost children: proceed immediately to nearest security post; child will be taken to Family Reunion Point at Gate 4 Guest Services.",
+        "Lost items after the event: call +1-800-STADIUM or email lostandfound@metroarena2026.com within 30 days."
+      ]
+    },
+    {
+      "id": "policy-medical-emergency",
+      "title": "Medical Emergency",
+      "category": "safety",
+      "summary": "Steps to take if you or someone near you has a medical emergency.",
+      "details": [
+        "For life-threatening emergencies: call 911 immediately.",
+        "Alert the nearest steward or security officer — all are first-aid trained.",
+        "AED (Automated External Defibrillator) units are located at every gate concourse and food court.",
+        "Nearest medical station: Gate 1 (North) or Gate 3 (South).",
+        "Do not move an injured person unless there is immediate danger of further harm."
+      ]
+    }
+  ],
+  "faqs": [
+    {
+      "id": "faq-1",
+      "question": "What time do gates open?",
+      "answer": "Gates 1, 2, and 4 open 3 hours before kick-off. Gate 3 opens 2.5 hours before kick-off. Arrival at least 90 minutes before kick-off is recommended to avoid queues."
+    },
+    {
+      "id": "faq-2",
+      "question": "Is there free Wi-Fi in the stadium?",
+      "answer": "Yes. Connect to 'MetroArena_Guest' — no password required. The network is stadium-wide and supports up to 80,000 simultaneous connections."
+    },
+    {
+      "id": "faq-3",
+      "question": "Where can I charge my phone?",
+      "answer": "Charging stations are available at each food court and at Guest Services desks at Gates 1 and 3. USB-A, USB-C, and wireless (Qi) pads available."
+    },
+    {
+      "id": "faq-4",
+      "question": "Can I re-enter if I leave the stadium?",
+      "answer": "Re-entry is permitted up to 30 minutes after kick-off with your original ticket. After that, re-entry is not allowed."
+    },
+    {
+      "id": "faq-5",
+      "question": "Where is the family sensory room?",
+      "answer": "The sensory-friendly room is in the West Family Zone (Gate 4), Room W-10. It has low lighting, sound dampening, and dedicated staff."
+    },
+    {
+      "id": "faq-6",
+      "question": "What languages does stadium staff speak?",
+      "answer": "Staff at information desks speak English, Spanish, French, Arabic, Portuguese, and Mandarin. Translation cards are available for 20+ additional languages."
+    },
+    {
+      "id": "faq-7",
+      "question": "Are there vegetarian or halal food options?",
+      "answer": "Yes. Vegan Corner (North Food Court) is fully vegan/vegetarian. Halal Grill (North Food Court) and Tacos & More (South Food Court) offer halal-certified options. Allergen menus available at every vendor."
+    },
+    {
+      "id": "faq-8",
+      "question": "How do I get to the stadium by public transit?",
+      "answer": "The Blue Line (North Station, 3-min walk to Gate 1) and Red Line (East Station, 5-min walk to Gate 2) run every 4–5 minutes on match day. Green Line serves Gate 3 (South Station, 4-min walk). Purple Line serves Gate 4 (West Station, 6-min walk)."
+    },
+    {
+      "id": "faq-9",
+      "question": "What should I do if I lose my child?",
+      "answer": "Immediately alert the nearest steward. Your child will be taken to the Family Reunion Point at Gate 4 Guest Services. Stadium-wide PA announcements can be requested."
+    },
+    {
+      "id": "faq-10",
+      "question": "Is smoking allowed?",
+      "answer": "Smoking and vaping are prohibited inside the stadium and within 50 meters of all entrances. Designated smoking areas are in external plazas — ask a steward for the nearest one."
+    }
+  ],
+  "sustainability_bins": [
+    { "id": "bin-recycling", "label": "Recycling", "color": "blue", "accepts": ["plastic bottles", "aluminum cans", "paper cups", "cardboard"] },
+    { "id": "bin-compost", "label": "Compost / Organic", "color": "green", "accepts": ["food scraps", "napkins", "compostable cups and containers"] },
+    { "id": "bin-landfill", "label": "Landfill / General Waste", "color": "black", "accepts": ["non-recyclable wrappers", "straws", "mixed waste not accepted by other bins"] },
+    { "id": "bin-ewaste", "label": "E-Waste", "color": "yellow", "accepts": ["batteries", "broken electronics", "earbuds"], "locations": ["Gate 1 concourse", "Gate 3 concourse"] }
+  ]
+}

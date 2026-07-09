@@ -1,0 +1,170 @@
+{
+  "transit_lines": [
+    {
+      "id": "blue-line",
+      "name": "Blue Line Metro",
+      "nearest_stop": "North Station",
+      "walking_minutes_to_gate1": 3,
+      "frequency_match_day": "Every 4 minutes during peak (T-2h to T+1.5h)",
+      "frequency_normal": "Every 10 minutes",
+      "direction_to_stadium": "Southbound toward City Center, alight at North Station",
+      "direction_from_stadium": "Northbound toward Airport/Downtown from North Station",
+      "capacity_per_train": 1200,
+      "accessible": true,
+      "notes": "Recommended line for fans arriving from North suburbs and Airport."
+    },
+    {
+      "id": "red-line",
+      "name": "Red Line Metro",
+      "nearest_stop": "East Station",
+      "walking_minutes_to_gate2": 5,
+      "frequency_match_day": "Every 5 minutes during peak",
+      "frequency_normal": "Every 12 minutes",
+      "direction_to_stadium": "Westbound, alight at East Station",
+      "direction_from_stadium": "Eastbound from East Station",
+      "capacity_per_train": 1000,
+      "accessible": true,
+      "notes": "Serves downtown hotels and convention center."
+    },
+    {
+      "id": "green-line",
+      "name": "Green Line Metro",
+      "nearest_stop": "South Station",
+      "walking_minutes_to_gate3": 4,
+      "frequency_match_day": "Every 6 minutes during peak",
+      "frequency_normal": "Every 15 minutes",
+      "direction_to_stadium": "Northbound, alight at South Station",
+      "direction_from_stadium": "Southbound from South Station",
+      "capacity_per_train": 900,
+      "accessible": true,
+      "notes": "Serves south city residential areas."
+    },
+    {
+      "id": "purple-line",
+      "name": "Purple Line Metro",
+      "nearest_stop": "West Station",
+      "walking_minutes_to_gate4": 6,
+      "frequency_match_day": "Every 8 minutes during peak",
+      "frequency_normal": "Every 20 minutes",
+      "direction_to_stadium": "Eastbound, alight at West Station",
+      "direction_from_stadium": "Westbound from West Station",
+      "capacity_per_train": 800,
+      "accessible": true,
+      "notes": "Serves west suburbs and university district."
+    }
+  ],
+  "shuttles": [
+    {
+      "id": "shuttle-airport",
+      "name": "Airport Express Shuttle",
+      "route": "International Airport → Lot A → Gate 1",
+      "frequency_match_day": "Every 15 minutes from T-4h to T+2h",
+      "journey_time_minutes": 35,
+      "capacity_per_bus": 55,
+      "accessible": true,
+      "accessible_features": ["wheelchair lift", "priority seating"],
+      "cost": "Free with match ticket",
+      "pickup_location": "Airport Terminal B, Bay 7"
+    },
+    {
+      "id": "shuttle-park-and-ride",
+      "name": "Park & Ride Shuttle – North",
+      "route": "North Park & Ride (Fairgrounds) → Gate 1",
+      "frequency_match_day": "Every 10 minutes from T-3h to T+2h",
+      "journey_time_minutes": 12,
+      "capacity_per_bus": 55,
+      "accessible": true,
+      "accessible_features": ["wheelchair lift"],
+      "cost": "Free with match ticket",
+      "pickup_location": "Fairgrounds Lot Row A"
+    },
+    {
+      "id": "shuttle-hotel-zone",
+      "name": "Hotel Zone Shuttle",
+      "route": "Downtown Hotel Cluster → Gate 2",
+      "frequency_match_day": "Every 20 minutes from T-3h to T+2h",
+      "journey_time_minutes": 18,
+      "capacity_per_bus": 40,
+      "accessible": true,
+      "accessible_features": ["wheelchair lift"],
+      "cost": "Free with match ticket",
+      "pickup_location": "Grand Plaza Hotel lobby"
+    }
+  ],
+  "parking_lots": [
+    {
+      "id": "lot-a",
+      "name": "Lot A – North Premium",
+      "capacity": 2000,
+      "accessible_spaces": 80,
+      "nearest_gate": "gate-1",
+      "cost_per_day_usd": 40,
+      "pre_booking_required": true
+    },
+    {
+      "id": "lot-b",
+      "name": "Lot B – North Standard",
+      "capacity": 3000,
+      "accessible_spaces": 60,
+      "nearest_gate": "gate-1",
+      "cost_per_day_usd": 25,
+      "pre_booking_required": false
+    },
+    {
+      "id": "lot-c",
+      "name": "Lot C – South Standard",
+      "capacity": 4000,
+      "accessible_spaces": 100,
+      "nearest_gate": "gate-3",
+      "cost_per_day_usd": 20,
+      "pre_booking_required": false
+    },
+    {
+      "id": "lot-e",
+      "name": "Lot E – West Family",
+      "capacity": 1500,
+      "accessible_spaces": 50,
+      "nearest_gate": "gate-4",
+      "cost_per_day_usd": 20,
+      "pre_booking_required": false
+    }
+  ],
+  "emissions_data": {
+    "note": "CO2 estimates for illustrative sustainability guidance. Based on average EPA/IPCC factors.",
+    "routes": [
+      {
+        "id": "route-downtown",
+        "name": "Downtown Hotels to Stadium",
+        "distance_km": 8,
+        "car_co2_kg": 1.6,
+        "shuttle_co2_kg": 0.28,
+        "metro_co2_kg": 0.12,
+        "walking_co2_kg": 0,
+        "recommended_mode": "metro",
+        "recommended_transit_id": "red-line"
+      },
+      {
+        "id": "route-airport",
+        "name": "International Airport to Stadium",
+        "distance_km": 28,
+        "car_co2_kg": 5.6,
+        "shuttle_co2_kg": 0.98,
+        "metro_co2_kg": 0.42,
+        "walking_co2_kg": null,
+        "recommended_mode": "shuttle",
+        "recommended_transit_id": "shuttle-airport"
+      },
+      {
+        "id": "route-north-suburbs",
+        "name": "North Suburbs to Stadium",
+        "distance_km": 18,
+        "car_co2_kg": 3.6,
+        "shuttle_co2_kg": 0.63,
+        "metro_co2_kg": 0.27,
+        "walking_co2_kg": null,
+        "recommended_mode": "metro",
+        "recommended_transit_id": "blue-line"
+      }
+    ]
+  }
+}
