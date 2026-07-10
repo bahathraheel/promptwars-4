@@ -64,16 +64,53 @@ export interface LLMCallResult {
   outputTokens: number;
 }
 
+// ─── AI Response Cache ────────────────────────────────────────────────────
+const llmResponseCache = new Map<string, LLMCallResult>();
+let llmHits = 0;
+let llmMisses = 0;
+
+/**
+ * Retrieves AI Response Cache Hit/Miss metrics.
+ */
+export function getLlmCacheMetrics() {
+  return {
+    hits: llmHits,
+    misses: llmMisses,
+    cacheSize: llmResponseCache.size,
+  };
+}
+
+/**
+ * Clears the LLM cache (for test and benchmark purposes).
+ */
+export function clearLlmCache() {
+  llmResponseCache.clear();
+  llmHits = 0;
+  llmMisses = 0;
+}
+
 // ─── Core call wrapper ────────────────────────────────────────────────────
 
 export async function llmCall(options: LLMCallOptions): Promise<LLMCallResult> {
-  const geminiKey = process.env['GEMINI_API_KEY'];
-
-  if (geminiKey && geminiKey !== 'your_gemini_key_here') {
-    return callGemini(options, geminiKey);
+  const cacheKey = `${options.tier}:${options.system ?? ''}:${options.user}`;
+  
+  if (llmResponseCache.has(cacheKey)) {
+    llmHits++;
+    return llmResponseCache.get(cacheKey)!;
   }
 
-  return callAnthropic(options);
+  llmMisses++;
+
+  const result = await (async () => {
+    const geminiKey = process.env['GEMINI_API_KEY'];
+    if (geminiKey && geminiKey !== 'your_gemini_key_here') {
+      return callGemini(options, geminiKey);
+    }
+    return callAnthropic(options);
+  })();
+
+  llmResponseCache.set(cacheKey, result);
+  return result;
 }
 
 // ─── Anthropic implementation ──────────────────────────────────────────────

@@ -25,6 +25,8 @@ import matchRouter from './routes/match.js';
 import concessionsRouter from './routes/concessions.js';
 import volunteerRouter from './routes/volunteer.js';
 import { initializeKnowledgeBase } from './services/knowledgeBase.js';
+import { getDijkstraMetrics } from './services/dijkstra.js';
+import { getLlmCacheMetrics } from './services/llmClient.js';
 
 // Initialize knowledge base embeddings ONCE at startup
 initializeKnowledgeBase();
@@ -133,6 +135,23 @@ app.use(express.urlencoded({ extended: false, limit: '16kb' }));
 // ─── Health check ─────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'StadiumPulse AI Backend', timestamp: new Date().toISOString() });
+});
+
+// ─── Metrics Check ────────────────────────────────────────────────────────
+app.get('/api/metrics', (_req, res) => {
+  const memory = process.memoryUsage();
+  res.json({
+    uptimeSeconds: process.uptime(),
+    memory: {
+      rssMb: parseFloat((memory.rss / 1024 / 1024).toFixed(2)),
+      heapUsedMb: parseFloat((memory.heapUsed / 1024 / 1024).toFixed(2)),
+      heapTotalMb: parseFloat((memory.heapTotal / 1024 / 1024).toFixed(2)),
+    },
+    caching: {
+      dijkstra: getDijkstraMetrics(),
+      llm: getLlmCacheMetrics(),
+    },
+  });
 });
 
 // ─── Routes ───────────────────────────────────────────────────────────────

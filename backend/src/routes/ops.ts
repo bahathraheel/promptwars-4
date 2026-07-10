@@ -12,6 +12,7 @@
 import { Router, type Request, type Response } from 'express';
 import { generateCrowdSnapshot } from '../services/sensorSimulator.js';
 import { generateSituationReport } from '../services/opsAgent.js';
+import { findShortestPath } from '../services/dijkstra.js';
 import {
   getLatestReport,
   getAllReports,
@@ -89,6 +90,14 @@ router.post('/actions/:id/decide', (req: Request, res: Response): void => {
 router.get('/audit', (req: Request, res: Response): void => {
   const limit = Math.min(parseInt((req.query['limit'] as string) ?? '100', 10), 500);
   res.json({ log: getAuditLog(limit), total: getAuditLog(500).length });
+});
+
+// GET /api/ops/route
+router.get('/route', (req: Request, res: Response): void => {
+  const from = (req.query['from'] as string) ?? 'gate-1';
+  const to = (req.query['to'] as string) ?? 'sec-100';
+  const result = findShortestPath(from, to);
+  res.json(result);
 });
 
 export default router;

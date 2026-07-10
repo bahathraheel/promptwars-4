@@ -10,7 +10,8 @@
     "test": "jest --runInBand --forceExit",
     "test:coverage": "jest --coverage --runInBand --forceExit",
     "lint": "eslint src --ext .ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "bench": "tsx src/benchmark.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
