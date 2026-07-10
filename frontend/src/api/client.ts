@@ -152,4 +152,70 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ item, routeId }),
     }),
+
+  getMatchStatus: () =>
+    apiCall<MatchStatus>('/api/match/status'),
+
+  postMatchCommentary: (style: 'neutral' | 'hype' | 'tactical') =>
+    apiCall<{ entry: string; commentary: string[] }>('/api/match/commentary', {
+      method: 'POST',
+      body: JSON.stringify({ style }),
+    }),
+
+  getConcessionsStands: () =>
+    apiCall<{ stands: ConcessionStand[] }>('/api/concessions/stands'),
+
+  postConcessionsOrder: (order: { standId: string; items: Array<{ name: string; quantity: number; price: number }>; totalPrice: number }) =>
+    apiCall<OrderResponse>('/api/concessions/order', {
+      method: 'POST',
+      body: JSON.stringify(order),
+    }),
+
+  getVolunteerBriefings: () =>
+    apiCall<{ briefings: VolunteerBriefing[] }>('/api/volunteer/briefings'),
+
+  postVolunteerIncident: (incident: { category: string; gateId: string; severity: string; description: string }) =>
+    apiCall<{ success: boolean; actionId: string; message: string }>('/api/volunteer/incident', {
+      method: 'POST',
+      body: JSON.stringify(incident),
+    }),
 };
+
+// ─── StadiumIQ Type Interfaces ─────────────────────────────────────────────
+
+export interface MatchStatus {
+  scoreBlue: number;
+  scoreGold: number;
+  clockMinutes: number;
+  clockSeconds: number;
+  commentary: string[];
+}
+
+export interface MenuItem {
+  name: string;
+  price: number;
+  tags: string[];
+}
+
+export interface ConcessionStand {
+  id: string;
+  name: string;
+  zone: string;
+  waitTimeMinutes: number;
+  menu: MenuItem[];
+}
+
+export interface OrderResponse {
+  success: boolean;
+  orderId: string;
+  status: string;
+  estimatedMinutes: number;
+  timestamp: string;
+}
+
+export interface VolunteerBriefing {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+}

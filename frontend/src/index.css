@@ -780,3 +780,13 @@ html.font-scale-xlarge {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* Responsive layouts for Concessions and Volunteer pages */
+@media (min-width: 768px) {
+  .grid-concessions {
+    grid-template-columns: 1fr 340px !important;
+  }
+  .grid-volunteer {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}

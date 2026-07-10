@@ -20,6 +20,9 @@ import chatRouter from './routes/chat.js';
 import opsRouter from './routes/ops.js';
 import whatifRouter from './routes/whatif.js';
 import sustainabilityRouter from './routes/sustainability.js';
+import matchRouter from './routes/match.js';
+import concessionsRouter from './routes/concessions.js';
+import volunteerRouter from './routes/volunteer.js';
 import { initializeKnowledgeBase } from './services/knowledgeBase.js';
 
 // Initialize knowledge base embeddings ONCE at startup
@@ -89,6 +92,9 @@ app.use('/api/chat', chatRouter);
 app.use('/api/ops', opsRouter);
 app.use('/api/whatif', whatifRouter);
 app.use('/api/sustainability', sustainabilityRouter);
+app.use('/api/match', matchRouter);
+app.use('/api/concessions', concessionsRouter);
+app.use('/api/volunteer', volunteerRouter);
 
 // ─── 404 ──────────────────────────────────────────────────────────────────
 app.use((_req, res) => {

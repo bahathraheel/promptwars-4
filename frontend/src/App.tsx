@@ -4,7 +4,8 @@ import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import { auth } from './api/firebase';
 import {
   MessageCircle, LayoutDashboard, Activity, Leaf, BookOpen, Zap, LogOut, Radio,
-  Settings, Keyboard, Volume2, VolumeX, Eye, EyeOff, HelpCircle, X
+  Settings, Keyboard, Volume2, VolumeX, Eye, EyeOff, HelpCircle, X,
+  Award, Utensils, HeartHandshake
 } from 'lucide-react';
 import FanCopilot from './pages/FanCopilot';
 import OpsDashboard from './pages/OpsDashboard';
@@ -13,6 +14,9 @@ import Sustainability from './pages/Sustainability';
 import AuditLog from './pages/AuditLog';
 import LiveVoice from './pages/LiveVoice';
 import Login from './pages/Login';
+import MatchCenter from './pages/MatchCenter';
+import FoodConcessions from './pages/FoodConcessions';
+import VolunteerHub from './pages/VolunteerHub';
 import './index.css';
 
 export default function App() {
@@ -104,6 +108,9 @@ function AppContent({ user }: { user: User }) {
         if (e.key === '4') { e.preventDefault(); navigate('/ops'); }
         if (e.key === '5') { e.preventDefault(); navigate('/whatif'); }
         if (e.key === '6') { e.preventDefault(); navigate('/audit'); }
+        if (e.key === '7') { e.preventDefault(); navigate('/match'); }
+        if (e.key === '8') { e.preventDefault(); navigate('/food'); }
+        if (e.key === '9') { e.preventDefault(); navigate('/volunteer'); }
       }
       if (e.key === 'Escape') {
         setPanelOpen(false);
@@ -134,7 +141,10 @@ function AppContent({ user }: { user: User }) {
       location.pathname === '/live' ? 'Live Voice Copilot' :
       location.pathname === '/ops' ? 'Operations Dashboard' :
       location.pathname === '/whatif' ? 'What If Simulation' :
-      location.pathname === '/audit' ? 'Audit Log' : 'Stadium Pulse';
+      location.pathname === '/audit' ? 'Audit Log' :
+      location.pathname === '/match' ? 'Match Center' :
+      location.pathname === '/food' ? 'Food concessions Finder' :
+      location.pathname === '/volunteer' ? 'Volunteer Hub' : 'Stadium Pulse';
     announce(`Loaded page: ${pageName}`);
   }, [location.pathname]);
 
@@ -206,6 +216,22 @@ function AppContent({ user }: { user: User }) {
               Fan Copilot
             </NavLink>
             <NavLink
+              to="/match"
+              className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+              aria-label="Match Center – live scores and AI commentaries"
+            >
+              <Award size={16} aria-hidden="true" />
+              Match Center
+            </NavLink>
+            <NavLink
+              to="/food"
+              className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+              aria-label="Food concessions – order food and skip lines"
+            >
+              <Utensils size={16} aria-hidden="true" />
+              Food Finder
+            </NavLink>
+            <NavLink
               to="/sustainability"
               className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               aria-label="Sustainability assistant – waste and transport"
@@ -248,6 +274,14 @@ function AppContent({ user }: { user: User }) {
             >
               <LayoutDashboard size={16} aria-hidden="true" />
               Ops Dashboard
+            </NavLink>
+            <NavLink
+              to="/volunteer"
+              className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+              aria-label="Volunteer Hub – safety briefings and ground incident reports"
+            >
+              <HeartHandshake size={16} aria-hidden="true" />
+              Volunteer Hub
             </NavLink>
             <NavLink
               to="/whatif"
@@ -308,6 +342,9 @@ function AppContent({ user }: { user: User }) {
             <Route path="/sustainability" element={<Sustainability />} />
             <Route path="/audit" element={<AuditLog />} />
             <Route path="/live" element={<LiveVoice />} />
+            <Route path="/match" element={<MatchCenter />} />
+            <Route path="/food" element={<FoodConcessions />} />
+            <Route path="/volunteer" element={<VolunteerHub />} />
           </Routes>
         </main>
       </div>
@@ -469,6 +506,18 @@ function AppContent({ user }: { user: User }) {
                 <tr>
                   <td><kbd>Alt + 6</kbd></td>
                   <td>Go to Audit Log</td>
+                </tr>
+                <tr>
+                  <td><kbd>Alt + 7</kbd></td>
+                  <td>Go to Match Center</td>
+                </tr>
+                <tr>
+                  <td><kbd>Alt + 8</kbd></td>
+                  <td>Go to Food Finder</td>
+                </tr>
+                <tr>
+                  <td><kbd>Alt + 9</kbd></td>
+                  <td>Go to Volunteer Hub</td>
                 </tr>
                 <tr>
                   <td><kbd>Alt + S</kbd></td>

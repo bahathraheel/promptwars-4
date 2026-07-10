@@ -95,6 +95,19 @@ export function getAllActions(): ProposedAction[] {
   return Array.from(_actions.values()).reverse();
 }
 
+export function addProposedAction(action: ProposedAction): void {
+  _actions.set(action.id, action);
+  _auditLog.push({
+    id: uuid(),
+    timestamp: new Date().toISOString(),
+    type: 'action_proposed',
+    actionId: action.id,
+    actionTitle: action.title,
+    confidence: action.confidence,
+    metadata: { category: action.category, priority: action.priority, source: 'volunteer' },
+  });
+}
+
 // ─── Audit Log ────────────────────────────────────────────────────────────
 
 export function getAuditLog(limit = 100): AuditEntry[] {

@@ -190,3 +190,34 @@ export const SustainabilityResponseSchema = z.object({
 
 export type SustainabilityRequest = z.infer<typeof SustainabilityRequestSchema>;
 export type SustainabilityResponse = z.infer<typeof SustainabilityResponseSchema>;
+
+// ─── Match Center ─────────────────────────────────────────────────────────
+
+export const MatchCommentaryRequestSchema = z.object({
+  style: z.enum(['neutral', 'hype', 'tactical']),
+});
+export type MatchCommentaryRequest = z.infer<typeof MatchCommentaryRequestSchema>;
+
+// ─── Concessions ──────────────────────────────────────────────────────────
+
+export const FoodOrderItemSchema = z.object({
+  name: z.string().min(1).max(100),
+  quantity: z.number().int().min(1).max(10),
+  price: z.number().min(0),
+});
+export const FoodOrderRequestSchema = z.object({
+  standId: z.string().min(1).max(32),
+  items: z.array(FoodOrderItemSchema).min(1),
+  totalPrice: z.number().min(0),
+});
+export type FoodOrderRequest = z.infer<typeof FoodOrderRequestSchema>;
+
+// ─── Volunteer Hub ────────────────────────────────────────────────────────
+
+export const VolunteerIncidentSchema = z.object({
+  category: z.enum(['medical', 'congestion', 'facility', 'security', 'other']),
+  gateId: z.string().min(1).max(32),
+  severity: z.enum(['low', 'medium', 'high']),
+  description: z.string().min(5).max(500),
+});
+export type VolunteerIncident = z.infer<typeof VolunteerIncidentSchema>;
