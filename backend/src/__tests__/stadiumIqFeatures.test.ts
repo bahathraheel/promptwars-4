@@ -299,3 +299,55 @@ describe('SECTION 13: Capability Areas Table Mappings (9 Tests)', () => {
     expect(res.body).toHaveProperty('targetLanguage', 'Arabic');
   });
 });
+
+describe('SECTION 14: Tournament Reference Data Endpoints (6 Tests)', () => {
+  test('Test 129: GET /api/tournament returns 2026 tournament overview', async () => {
+    const res = await request(app).get('/api/tournament').expect(200);
+    expect(res.body).toHaveProperty('teams', 48);
+    expect(res.body).toHaveProperty('matches', 104);
+    expect(res.body).toHaveProperty('venues', 16);
+    expect(res.body.openingMatch.venueId).toBe('mex-azteca');
+    expect(res.body.finalMatch.venueId).toBe('usa-metlife');
+  });
+
+  test('Test 130: GET /api/venues returns all 16 host venues', async () => {
+    const res = await request(app).get('/api/venues').expect(200);
+    expect(res.body).toHaveProperty('count', 16);
+    expect(Array.isArray(res.body.venues)).toBe(true);
+    expect(res.body.venues.length).toBe(16);
+  });
+
+  test('Test 131: GET /api/venues/:id returns MetLife Stadium detail', async () => {
+    const res = await request(app).get('/api/venues/usa-metlife').expect(200);
+    expect(res.body.name).toBe('MetLife Stadium');
+    expect(res.body.country).toBe('USA');
+    expect(res.body.matchCount).toBe(8);
+    expect(res.body.hasElevators).toBe(true);
+  });
+
+  test('Test 132: GET /api/venues/:id returns 404 for unknown venue', async () => {
+    const res = await request(app).get('/api/venues/unknown-xyz').expect(404);
+    expect(res.body).toHaveProperty('code', 'VENUE_NOT_FOUND');
+  });
+
+  test('Test 133: GET /api/matches returns 104-match fixture schedule', async () => {
+    const res = await request(app).get('/api/matches').expect(200);
+    expect(res.body).toHaveProperty('count');
+    expect(Array.isArray(res.body.matches)).toBe(true);
+    // Opening match at Azteca
+    const opening = res.body.matches.find((m: { matchNumber: number }) => m.matchNumber === 1);
+    expect(opening.venueId).toBe('mex-azteca');
+    // Final at MetLife
+    const final = res.body.matches.find((m: { round: string }) => m.round === 'final');
+    expect(final.venueId).toBe('usa-metlife');
+  });
+
+  test('Test 134: GET /api/config/options returns 10 languages including Arabic (RTL)', async () => {
+    const res = await request(app).get('/api/config/options').expect(200);
+    expect(Array.isArray(res.body.languages)).toBe(true);
+    expect(res.body.languages.length).toBe(10);
+    const arabic = res.body.languages.find((l: { code: string }) => l.code === 'ar');
+    expect(arabic).toBeDefined();
+    expect(arabic.rtl).toBe(true);
+  });
+});
