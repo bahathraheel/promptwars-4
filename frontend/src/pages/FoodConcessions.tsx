@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, type ConcessionStand, type MenuItem } from '../api/client';
+import { api, type ConcessionStand, type MenuItem, type Match } from '../api/client';
 import { ShoppingBag, Plus, Minus, Check, Clock, ShieldCheck, Utensils } from 'lucide-react';
 
 export default function FoodConcessions() {
@@ -7,6 +7,10 @@ export default function FoodConcessions() {
   const [selectedStandId, setSelectedStandId] = useState('');
   const [cart, setCart] = useState<{ name: string; price: number; quantity: number }[]>([]);
   const [error, setError] = useState('');
+
+  // Match and Venue selection
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [selectedMatchId, setSelectedMatchId] = useState('');
 
   // Checkout states
   const [orderStatus, setOrderStatus] = useState<'idle' | 'submitting' | 'preparing' | 'ready'>('idle');
@@ -20,19 +24,42 @@ export default function FoodConcessions() {
   };
 
   useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        const res = await api.getMatches();
+        setMatches(res.matches);
+        if (res.matches.length > 0) {
+          setSelectedMatchId(res.matches[0].id);
+        }
+      } catch (err) {
+        console.error('Failed to load matches', err);
+      }
+    };
+    fetchMatches();
+  }, []);
+
+  useEffect(() => {
     const fetchStands = async () => {
       try {
-        const res = await api.getConcessionsStands();
+        const selectedMatch = matches.find(m => m.id === selectedMatchId);
+        const venueId = selectedMatch?.venueId;
+        const res = await api.getConcessionsStands(venueId);
         setStands(res.stands);
         if (res.stands.length > 0) {
           setSelectedStandId(res.stands[0].id);
+        } else {
+          setSelectedStandId('');
         }
       } catch (err) {
         setError('Failed to load concession stands');
       }
     };
-    fetchStands();
-  }, []);
+    // Re-fetch stands whenever the selected match (and thus venue) changes
+    if (selectedMatchId) {
+      fetchStands();
+      setCart([]); // Clear cart on venue change
+    }
+  }, [selectedMatchId, matches]);
 
   // Prep progress simulation loop
   useEffect(() => {
@@ -132,23 +159,45 @@ export default function FoodConcessions() {
 
       {error && <div className="alert alert-error" style={{ marginBottom: '16px' }}>{error}</div>}
 
-      {/* Stand Selection Selector */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-        <label htmlFor="concessions-select" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-          Select Concession Stand:
-        </label>
-        <select
-          id="concessions-select"
-          value={selectedStandId}
-          onChange={(e) => handleStandChange(e.target.value)}
-          style={{ width: '100%', minHeight: '44px', padding: '8px 12px', fontSize: '0.9rem' }}
-        >
-          {stands.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name} ({s.zone}) — Est. Wait: {s.waitTimeMinutes} mins
-            </option>
-          ))}
-        </select>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+        {/* Match Selection Selector */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label htmlFor="match-select" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+            Select Match (Determines Venue):
+          </label>
+          <select
+            id="match-select"
+            value={selectedMatchId}
+            onChange={(e) => setSelectedMatchId(e.target.value)}
+            style={{ width: '100%', minHeight: '44px', padding: '8px 12px', fontSize: '0.9rem' }}
+          >
+            {matches.map((m) => (
+              <option key={m.id} value={m.id}>
+                Match {m.matchNumber}: {m.homeTeam} vs {m.awayTeam}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Stand Selection Selector */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label htmlFor="concessions-select" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+            Select Concession Stand:
+          </label>
+          <select
+            id="concessions-select"
+            value={selectedStandId}
+            onChange={(e) => handleStandChange(e.target.value)}
+            style={{ width: '100%', minHeight: '44px', padding: '8px 12px', fontSize: '0.9rem' }}
+            disabled={stands.length === 0}
+          >
+            {stands.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name} ({s.zone}) — Est. Wait: {s.waitTimeMinutes} mins
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Grid: Menu & Cart/Progress */}

@@ -162,8 +162,8 @@ export const api = {
       body: JSON.stringify({ style }),
     }),
 
-  getConcessionsStands: () =>
-    apiCall<{ stands: ConcessionStand[] }>('/api/concessions/stands'),
+  getConcessionsStands: (venueId?: string) =>
+    apiCall<{ stands: ConcessionStand[] }>(venueId ? `/api/concessions/stands?venueId=${venueId}` : '/api/concessions/stands'),
 
   postConcessionsOrder: (order: { standId: string; items: Array<{ name: string; quantity: number; price: number }>; totalPrice: number }) =>
     apiCall<OrderResponse>('/api/concessions/order', {
@@ -179,6 +179,9 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(incident),
     }),
+
+  getMatches: () =>
+    apiCall<{ matches: Match[] }>('/api/matches'),
 };
 
 // ─── StadiumIQ Type Interfaces ─────────────────────────────────────────────
@@ -218,4 +221,14 @@ export interface VolunteerBriefing {
   title: string;
   content: string;
   category: string;
+}
+
+export interface Match {
+  id: string;
+  matchNumber: number;
+  stage: string;
+  date: string;
+  venueId: string;
+  homeTeam: string;
+  awayTeam: string;
 }
