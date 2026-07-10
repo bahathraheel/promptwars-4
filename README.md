@@ -49,22 +49,6 @@ Calculates comparative carbon footprints for travel routes and nudges fans towar
 
 ---
 
-## 🏆 Evaluation Parameter Alignment
-
-We built StadiumPulse to exceed every judging metric:
-
-| Parameter | Our Execution |
-| :--- | :--- |
-| **Code Quality** | Single-responsibility modules, strict TypeScript, Zod schema validation, comprehensive JSDoc, ESLint + Prettier enforcement, and a served OpenAPI 3.1 contract. |
-| **Security** | Helmet CSP/HSTS, CORS allow-lists, 2-tier IP rate limiting, strict JSON payload constraints, zero production stack traces, and **prompt-injection sanitization**. |
-| **Efficiency** | Memoized routing (~30× speedup), ETag/304 caching, LLM response caches, Gzip compression (~79% payload reduction), and lightweight DOM elements. |
-| **Testing Excellence** | **180 automated tests** passing across 8 hermetic suites (running fully offline with stubbed network calls). |
-| **Accessibility (WCAG 2.1 AA)** | ARIA-live regions, roving tabIndex keyboard navigation, `prefers-reduced-motion`, `forced-colors` high contrast support, and semantic HTML5 landmarks. |
-| **World Cup 2026 Grounding** | Encodes exact topological data for all **16 host venues**, the **104-match fixture schedule**, and configures 48 participating teams. |
-
-<br />
-
----
 
 ## 🏗️ Architecture Stack
 
