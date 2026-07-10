@@ -312,6 +312,15 @@
           "400": { "description": "Invalid report details" }
         }
       }
+    },
+    "/api/capabilities": {
+      "get": {
+        "summary": "FIFA World Cup 2026 Grounding & Capabilities Map",
+        "description": "Lists the 8 capability areas, 4 named audiences, and real 2026 tournament stats (16 venues, 48 teams, opening at Azteca, final at MetLife).",
+        "responses": {
+          "200": { "description": "Structured JSON containing grounding data, capabilities, and audiences" }
+        }
+      }
     }
   }
 }

@@ -188,3 +188,26 @@ describe('SECTION 11: Volunteer Hub & Incident Triage Pipeline (5 Tests)', () =>
     expect(actions[0].priority).toBe(2); // high maps to 2
   });
 });
+
+describe('SECTION 12: Capabilities and Tournament Grounding (2 Tests)', () => {
+  test('Test 118: GET /api/capabilities retrieves 2026 data coordinates (16 venues, 48 teams, Azteca, MetLife)', async () => {
+    const res = await request(app)
+      .get('/api/capabilities')
+      .expect(200);
+    expect(res.body).toHaveProperty('worldCup2026');
+    expect(res.body.worldCup2026.venuesCount).toBe(16);
+    expect(res.body.worldCup2026.teamsCount).toBe(48);
+    expect(res.body.worldCup2026.openingVenue).toContain('Azteca');
+    expect(res.body.worldCup2026.finalVenue).toContain('MetLife');
+  });
+
+  test('Test 119: GET /api/capabilities lists all 8 capability areas and 4 named audiences', async () => {
+    const res = await request(app)
+      .get('/api/capabilities')
+      .expect(200);
+    expect(res.body).toHaveProperty('capabilities');
+    expect(res.body).toHaveProperty('audiences');
+    expect(res.body.capabilities.length).toBe(8);
+    expect(res.body.audiences.length).toBe(4);
+  });
+});
