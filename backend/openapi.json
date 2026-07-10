@@ -1,0 +1,317 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "StadiumPulse AI API",
+    "description": "GenAI-driven operating layer for the FIFA World Cup 2026 at MetLife Stadium. Provides Fan Concierge assistants, Ops incident triages, What-If simulation telemetry, concessions ordering, and ground safety checkers.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/chat": {
+      "post": {
+        "summary": "Fan Copilot Concierge Chat",
+        "description": "Submits a fan query to the RAG knowledge base. Checks inputs for prompt injections and outputs grounded multilingual replies.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string", "minLength": 1, "maxLength": 2000 },
+                  "history": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": { "type": "string", "enum": ["user", "assistant"] },
+                        "content": { "type": "string", "maxLength": 4000 }
+                      },
+                      "required": ["role", "content"]
+                    }
+                  },
+                  "language": { "type": "string", "maxLength": 10 },
+                  "mode": { "type": "string", "enum": ["chat", "sms", "pictogram", "voice"] }
+                },
+                "required": ["message"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful grounded response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "reply": { "type": "string" },
+                    "detectedLanguage": { "type": "string" },
+                    "retrievedChunks": { "type": "integer" },
+                    "topRetrievalScore": { "type": "number" },
+                    "isGrounded": { "type": "boolean" },
+                    "intent": { "type": "string" },
+                    "modelUsed": { "type": "string" },
+                    "responseTimeMs": { "type": "number" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Objectionable prompt injection or validation error" }
+        }
+      }
+    },
+    "/api/ops/snapshot": {
+      "get": {
+        "summary": "Live Crowd Snapshot Telemetry",
+        "description": "Retrieves aggregate occupancy count and wait queue times from gate telemetry. Privacy-safe: zero PII or biometrics.",
+        "responses": {
+          "200": {
+            "description": "Simulated aggregate counts snapshot"
+          }
+        }
+      }
+    },
+    "/api/ops/report": {
+      "get": {
+        "summary": "Get Latest Situation Briefing",
+        "description": "Fetches the current active situation summary and recommended response coordinates.",
+        "responses": {
+          "200": { "description": "Briefing summary details" },
+          "404": { "description": "No report generated yet" }
+        }
+      },
+      "post": {
+        "summary": "Generate Fresh Situation Briefing",
+        "description": "Polls telemetry and uses the reasoning model to generate new recommendations.",
+        "responses": {
+          "200": { "description": "Generated situation report" }
+        }
+      }
+    },
+    "/api/ops/actions": {
+      "get": {
+        "summary": "List Operational Actions",
+        "description": "Returns both pending and completed action items (approved / rejected).",
+        "responses": {
+          "200": { "description": "Proposed actions list" }
+        }
+      }
+    },
+    "/api/ops/actions/{id}/decide": {
+      "post": {
+        "summary": "Approve or Reject Proposed Action",
+        "description": "Human-in-the-loop validation endpoint for decisions.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "decision": { "type": "string", "enum": ["approved", "rejected"] },
+                  "operatorId": { "type": "string", "default": "operator-1" },
+                  "notes": { "type": "string", "maxLength": 500 }
+                },
+                "required": ["decision"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Action decision applied" },
+          "400": { "description": "Invalid decision payload" },
+          "404": { "description": "Action ID not found" }
+        }
+      }
+    },
+    "/api/ops/audit": {
+      "get": {
+        "summary": "Immutable Audit Log Log",
+        "description": "Returns log entries for operational actions and operator checkpoints.",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 100 } }
+        ],
+        "responses": {
+          "200": { "description": "Immutable log logs" }
+        }
+      }
+    },
+    "/api/whatif": {
+      "post": {
+        "summary": "What-If Surging Simulation",
+        "description": "Simulates extra fan crowds arriving early at a specific gate location.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "extraFans": { "type": "integer", "minimum": 1, "maximum": 50000 },
+                  "gateId": { "type": "string", "maxLength": 32 },
+                  "minutesBefore": { "type": "integer", "minimum": 1, "maximum": 180 }
+                },
+                "required": ["extraFans", "gateId", "minutesBefore"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Simulation result charts and mitigations narrative" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/sustainability": {
+      "post": {
+        "summary": "Eco Waste Checker",
+        "description": "Returns correct bin recycling labels and carbon offset comparisons.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "item": { "type": "string", "minLength": 1, "maxLength": 200 },
+                  "routeId": { "type": "string", "maxLength": 32 }
+                },
+                "required": ["item"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Recycling bin recommendation & CO2 metrics" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/match/status": {
+      "get": {
+        "summary": "Get Live Scoreboard Status",
+        "description": "Retrieves ticking match minutes, scores, and recent event logs.",
+        "responses": {
+          "200": { "description": "Ticking clock and commentary feed array" }
+        }
+      }
+    },
+    "/api/match/commentary": {
+      "post": {
+        "summary": "Generate AI Commentary Line",
+        "description": "Asks the fast model to generate play commentary matching the preferred tone.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "style": { "type": "string", "enum": ["neutral", "hype", "tactical"] }
+                },
+                "required": ["style"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "New commentary entry details" },
+          "400": { "description": "Invalid style preferred" }
+        }
+      }
+    },
+    "/api/concessions/stands": {
+      "get": {
+        "summary": "Concourse Concessions Finder",
+        "description": "Lists all food concessions stands, estimated wait queues, and menu items.",
+        "responses": {
+          "200": { "description": "Array of food stands and items" }
+        }
+      }
+    },
+    "/api/concessions/order": {
+      "post": {
+        "summary": "Place Concessions Order",
+        "description": "Validates food items and subtotal pricing, returning queue ticket confirmations.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "standId": { "type": "string", "minLength": 1, "maxLength": 32 },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string", "minLength": 1, "maxLength": 100 },
+                        "quantity": { "type": "integer", "minimum": 1, "maximum": 10 },
+                        "price": { "type": "number", "minimum": 0 }
+                      },
+                      "required": ["name", "quantity", "price"]
+                    }
+                  },
+                  "totalPrice": { "type": "number", "minimum": 0 }
+                },
+                "required": ["standId", "items", "totalPrice"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Order received and preparation ticket code generated" },
+          "400": { "description": "Invalid order validation limits" }
+        }
+      }
+    },
+    "/api/volunteer/briefings": {
+      "get": {
+        "summary": "Ground Safety briefings",
+        "description": "Returns checklists for weather and crowd routing procedures.",
+        "responses": {
+          "200": { "description": "Volunteer checklist guidelines" }
+        }
+      }
+    },
+    "/api/volunteer/incident": {
+      "post": {
+        "summary": "Report Ground Incident Alert",
+        "description": "Accepts incident report parameters from ground stewards and routes them directly to the operations dashboard actions log.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category": { "type": "string", "enum": ["medical", "congestion", "facility", "security", "other"] },
+                  "gateId": { "type": "string", "minLength": 1, "maxLength": 32 },
+                  "severity": { "type": "string", "enum": ["low", "medium", "high"] },
+                  "description": { "type": "string", "minLength": 5, "maxLength": 500 }
+                },
+                "required": ["category", "gateId", "severity", "description"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Incident registered and proposed action dispatched to Ops" },
+          "400": { "description": "Invalid report details" }
+        }
+      }
+    }
+  }
+}

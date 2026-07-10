@@ -6,7 +6,6 @@ export default function FoodConcessions() {
   const [stands, setStands] = useState<ConcessionStand[]>([]);
   const [selectedStandId, setSelectedStandId] = useState('');
   const [cart, setCart] = useState<{ name: string; price: number; quantity: number }[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   // Checkout states
@@ -22,7 +21,6 @@ export default function FoodConcessions() {
 
   useEffect(() => {
     const fetchStands = async () => {
-      setLoading(true);
       try {
         const res = await api.getConcessionsStands();
         setStands(res.stands);
@@ -31,8 +29,6 @@ export default function FoodConcessions() {
         }
       } catch (err) {
         setError('Failed to load concession stands');
-      } finally {
-        setLoading(false);
       }
     };
     fetchStands();
@@ -40,7 +36,7 @@ export default function FoodConcessions() {
 
   // Prep progress simulation loop
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: any;
     if (orderStatus === 'preparing') {
       timer = setInterval(() => {
         setPrepProgress((prev) => {

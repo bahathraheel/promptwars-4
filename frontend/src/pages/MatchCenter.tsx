@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api, type MatchStatus } from '../api/client';
-import { Play, Volume2, Sparkles, Award } from 'lucide-react';
+import { Volume2, Sparkles } from 'lucide-react';
 
 export default function MatchCenter() {
   const [matchStatus, setMatchStatus] = useState<MatchStatus | null>(null);
@@ -120,7 +120,7 @@ export default function MatchCenter() {
 
       {/* AI Commentary Panel */}
       <section className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyBetween: 'space-between', gap: '12px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
           <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Sparkles size={16} color="var(--color-primary)" /> AI Live Commentary
           </h3>

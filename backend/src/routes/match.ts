@@ -1,3 +1,9 @@
+/**
+ * @file match.ts
+ * @description StadiumPulse AI – Match telemetry & GenAI commentary generator route.
+ * Exposes endpoints to retrieve real-time scores and broadcast style-tailored soccer commentary.
+ */
+
 import { Router, type Request, type Response } from 'express';
 import { MatchCommentaryRequestSchema } from '../types/index.js';
 import { llmCall } from '../services/llmClient.js';
@@ -10,9 +16,12 @@ let clockMinutes = 0;
 let clockSeconds = 0;
 let commentary: string[] = ['The teams are still in the tunnel.'];
 
-// Background simulation loop
+/**
+ * Background simulation loop.
+ * Speeds up elapsed match clock and triggers goal events based on random telemetry.
+ */
 let matchInterval = setInterval(() => {
-  clockSeconds += 15; // Speed up game time for demo
+  clockSeconds += 15;
   if (clockSeconds >= 60) {
     clockMinutes += 1;
     clockSeconds = 0;
@@ -24,7 +33,6 @@ let matchInterval = setInterval(() => {
     return;
   }
 
-  // Random events: 3% chance of goal every tick
   if (Math.random() < 0.03 && clockMinutes > 0) {
     const isBlue = Math.random() < 0.5;
     if (isBlue) {
@@ -37,7 +45,11 @@ let matchInterval = setInterval(() => {
   }
 }, 5000);
 
-// GET /api/match/status
+/**
+ * @route GET /api/match/status
+ * @description Retrieves the current match scoreboard values (scores, elapsed time, commentary feed).
+ * @access Public
+ */
 router.get('/status', (_req: Request, res: Response) => {
   res.json({
     scoreBlue,
@@ -48,11 +60,21 @@ router.get('/status', (_req: Request, res: Response) => {
   });
 });
 
-// POST /api/match/commentary
+/**
+ * @route POST /api/match/commentary
+ * @description Triggers a new GenAI commentary line based on the preferred presentation style.
+ * @param {string} req.body.style - Commentary tone ('neutral' | 'hype' | 'tactical')
+ * @returns {object} Commentary entry and updated commentaries array
+ * @access Public
+ */
 router.post('/commentary', async (req: Request, res: Response): Promise<void> => {
   const parseResult = MatchCommentaryRequestSchema.safeParse(req.body);
   if (!parseResult.success) {
-    res.status(400).json({ error: 'Invalid commentary style', details: parseResult.error.flatten() });
+    res.status(400).json({
+      error: 'Invalid commentary style',
+      code: 'VALIDATION_ERROR',
+      details: parseResult.error.flatten(),
+    });
     return;
   }
 
@@ -82,7 +104,10 @@ router.post('/commentary', async (req: Request, res: Response): Promise<void> =>
   }
 });
 
-// Reset match (helper for testing)
+/**
+ * Resets the in-memory match simulation variables.
+ * Designed primarily for unit and integration testing.
+ */
 export function resetMatchForTest() {
   scoreBlue = 0;
   scoreGold = 0;

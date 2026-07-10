@@ -4,7 +4,7 @@ import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import { auth } from './api/firebase';
 import {
   MessageCircle, LayoutDashboard, Activity, Leaf, BookOpen, Zap, LogOut, Radio,
-  Settings, Keyboard, Volume2, VolumeX, Eye, EyeOff, HelpCircle, X,
+  Settings, Keyboard, Volume2, VolumeX, X,
   Award, Utensils, HeartHandshake
 } from 'lucide-react';
 import FanCopilot from './pages/FanCopilot';

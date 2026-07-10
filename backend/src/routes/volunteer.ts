@@ -1,3 +1,9 @@
+/**
+ * @file volunteer.ts
+ * @description StadiumPulse AI – Volunteer management & incident reporting routing.
+ * Provides Ground Briefing checklists and accepts real-time gate incidents from stewards.
+ */
+
 import { Router, type Request, type Response } from 'express';
 import { VolunteerIncidentSchema } from '../types/index.js';
 import { addProposedAction } from '../services/auditStore.js';
@@ -5,7 +11,11 @@ import type { ProposedAction } from '../types/index.js';
 
 const router = Router();
 
-// GET /api/volunteer/briefings
+/**
+ * @route GET /api/volunteer/briefings
+ * @description Retrieves active safety briefings, weather alerts, and transit advisories.
+ * @access Public
+ */
 router.get('/briefings', (_req: Request, res: Response) => {
   res.json({
     briefings: [
@@ -16,11 +26,25 @@ router.get('/briefings', (_req: Request, res: Response) => {
   });
 });
 
-// POST /api/volunteer/incident
+/**
+ * @route POST /api/volunteer/incident
+ * @description Submits a ground incident alert from a volunteer.
+ * Incident details are validated and forwarded directly to the Operations Dashboard proposed actions queue.
+ * @param {string} req.body.category - Incident type ('medical' | 'congestion' | 'facility' | 'security' | 'other')
+ * @param {string} req.body.gateId - Gate location identifier
+ * @param {string} req.body.severity - Severity rating ('low' | 'medium' | 'high')
+ * @param {string} req.body.description - Descriptive description of the event
+ * @returns {object} Status code confirmation and mapped action ID
+ * @access Public
+ */
 router.post('/incident', (req: Request, res: Response): void => {
   const parseResult = VolunteerIncidentSchema.safeParse(req.body);
   if (!parseResult.success) {
-     res.status(400).json({ error: 'Invalid incident report', details: parseResult.error.flatten() });
+     res.status(400).json({
+       error: 'Invalid incident report',
+       code: 'VALIDATION_ERROR',
+       details: parseResult.error.flatten(),
+     });
      return;
   }
 

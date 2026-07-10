@@ -1,8 +1,17 @@
+/**
+ * @file concessions.ts
+ * @description StadiumPulse AI – Concessions and concessions ordering routes.
+ * Serves menus, dynamic queue wait time estimates, and validates incoming concessions orders.
+ */
+
 import { Router, type Request, type Response } from 'express';
 import { FoodOrderRequestSchema } from '../types/index.js';
 
 const router = Router();
 
+/**
+ * In-memory concessions stands data with items, pricing, and dietary labels.
+ */
 const CONCESSION_STANDS = [
   {
     id: 'stand-n-1',
@@ -54,9 +63,13 @@ const CONCESSION_STANDS = [
   },
 ];
 
-// GET /api/concessions/stands
+/**
+ * @route GET /api/concessions/stands
+ * @description Retrieves a list of all concession stands along with live-toggled wait times and menus.
+ * @access Public
+ */
 router.get('/stands', (_req: Request, res: Response) => {
-  // Add minor variance to wait times for live effect
+  // Add minor variance to wait times for live simulation effect
   const stands = CONCESSION_STANDS.map((s) => ({
     ...s,
     waitTimeMinutes: Math.max(2, s.waitTimeMinutes + Math.floor(Math.random() * 5) - 2),
@@ -64,11 +77,23 @@ router.get('/stands', (_req: Request, res: Response) => {
   res.json({ stands });
 });
 
-// POST /api/concessions/order
+/**
+ * @route POST /api/concessions/order
+ * @description Places a food order at a chosen stand. Body is validated against FoodOrderRequestSchema.
+ * @param {string} req.body.standId - Target stand identifier
+ * @param {Array} req.body.items - Menu items ordered with quantity and price details
+ * @param {number} req.body.totalPrice - Computed order subtotal
+ * @returns {object} Confirmed order ID, preparation state, and pickup countdown
+ * @access Public
+ */
 router.post('/order', (req: Request, res: Response): void => {
   const parseResult = FoodOrderRequestSchema.safeParse(req.body);
   if (!parseResult.success) {
-    res.status(400).json({ error: 'Invalid order structure', details: parseResult.error.flatten() });
+    res.status(400).json({
+      error: 'Invalid order structure',
+      code: 'VALIDATION_ERROR',
+      details: parseResult.error.flatten(),
+    });
     return;
   }
 

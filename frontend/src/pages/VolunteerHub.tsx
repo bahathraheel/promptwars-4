@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api, type VolunteerBriefing } from '../api/client';
-import { Send, FileText, CheckSquare, Square, AlertOctagon, HeartHandshake } from 'lucide-react';
+import { Send, CheckSquare, Square, AlertOctagon, HeartHandshake } from 'lucide-react';
 
 export default function VolunteerHub() {
   const [briefings, setBriefings] = useState<VolunteerBriefing[]>([]);
