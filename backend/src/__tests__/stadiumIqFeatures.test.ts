@@ -211,3 +211,91 @@ describe('SECTION 12: Capabilities and Tournament Grounding (2 Tests)', () => {
     expect(res.body.audiences.length).toBe(4);
   });
 });
+
+describe('SECTION 13: Capability Areas Table Mappings (9 Tests)', () => {
+  test('Test 120: POST /api/concierge returns RAG reply', async () => {
+    const res = await request(app)
+      .post('/api/concierge')
+      .send({ message: 'What is the bag policy?', language: 'Spanish' })
+      .expect(200);
+    expect(res.body).toHaveProperty('reply');
+    expect(res.body).toHaveProperty('detectedLanguage', 'Spanish');
+  });
+
+  test('Test 121: POST /api/navigate calculates Dijkstra route and supports stepFree', async () => {
+    const res = await request(app)
+      .post('/api/navigate')
+      .send({ from: 'gate-1', to: 'sec-300', stepFree: true })
+      .expect(200);
+    expect(res.body).toHaveProperty('path');
+    expect(res.body).toHaveProperty('distance');
+    expect(res.body).toHaveProperty('stepFreeActive', true);
+  });
+
+  test('Test 122: GET /api/crowd/:venueId returns zone alert states and occupancy', async () => {
+    const res = await request(app)
+      .get('/api/crowd/venue-metlife')
+      .expect(200);
+    expect(res.body).toHaveProperty('overallOccupancyPct');
+    expect(res.body).toHaveProperty('zones');
+    expect(Array.isArray(res.body.zones)).toBe(true);
+  });
+
+  test('Test 123: POST /api/incident triages incidents, sets SLA, and routes to dashboard', async () => {
+    const res = await request(app)
+      .post('/api/incident')
+      .send({ category: 'medical', gateId: 'gate-2', severity: 'high', description: 'Steward slips' })
+      .expect(200);
+    expect(res.body).toHaveProperty('success', true);
+    expect(res.body).toHaveProperty('slaMinutes', 5);
+    expect(res.body).toHaveProperty('dispatchTeam');
+    expect(res.body).toHaveProperty('escalationContact');
+  });
+
+  test('Test 124: POST /api/announce translates public safety announcements', async () => {
+    const res = await request(app)
+      .post('/api/announce')
+      .send({ message: 'Ramp closed', targetLanguage: 'French' })
+      .expect(200);
+    expect(res.body).toHaveProperty('translated');
+    expect(res.body).toHaveProperty('announcementScript');
+  });
+
+  test('Test 125: POST /api/briefing generates shift briefs', async () => {
+    const res = await request(app)
+      .post('/api/briefing')
+      .send({ role: 'steward' })
+      .expect(200);
+    expect(res.body).toHaveProperty('duties');
+    expect(res.body).toHaveProperty('escalationInstructions');
+    expect(res.body).toHaveProperty('phrases');
+  });
+
+  test('Test 126: POST /api/sustainability/footprint calculates CO2 comparison', async () => {
+    const res = await request(app)
+      .post('/api/sustainability/footprint')
+      .send({ item: 'cup', routeId: 'route-downtown' })
+      .expect(200);
+    expect(res.body).toHaveProperty('carCO2kg');
+    expect(res.body).toHaveProperty('metroCO2kg');
+    expect(res.body).toHaveProperty('nudgeText');
+  });
+
+  test('Test 127: GET /api/plan/:venueId retrieves arrival plan timetables', async () => {
+    const res = await request(app)
+      .get('/api/plan/venue-metlife')
+      .expect(200);
+    expect(res.body).toHaveProperty('fixture');
+    expect(res.body).toHaveProperty('recommendedArrivalWindow');
+    expect(res.body).toHaveProperty('steps');
+  });
+
+  test('Test 128: POST /api/translate performs on-demand translations', async () => {
+    const res = await request(app)
+      .post('/api/translate')
+      .send({ text: 'Where is the exit?', targetLanguage: 'Arabic' })
+      .expect(200);
+    expect(res.body).toHaveProperty('translatedText');
+    expect(res.body).toHaveProperty('targetLanguage', 'Arabic');
+  });
+});
