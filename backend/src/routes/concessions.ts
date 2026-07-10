@@ -31,10 +31,10 @@ const CONCESSION_STANDS = [
     zone: 'East Concourses',
     waitTimeMinutes: 15,
     menu: [
-      { name: 'Classic Burger', price: 14, tags: [] },
-      { name: 'Chicken Tenders', price: 12, tags: [] },
-      { name: 'Loaded Fries', price: 9, tags: ['Vegetarian'] },
-      { name: 'Soft Drink', price: 6, tags: ['Vegetarian', 'Vegan'] },
+      { name: 'Halal Chicken Platter', price: 15, tags: ['Halal'] },
+      { name: 'Lamb Gyro', price: 13, tags: ['Halal'] },
+      { name: 'Falafel Wrap', price: 11, tags: ['Halal', 'Vegetarian'] },
+      { name: 'Bottled Water', price: 4, tags: ['Vegan'] },
     ],
   },
   {
@@ -43,10 +43,10 @@ const CONCESSION_STANDS = [
     zone: 'South Concourses',
     waitTimeMinutes: 5,
     menu: [
-      { name: 'Classic Burger', price: 14, tags: [] },
-      { name: 'Chicken Tenders', price: 12, tags: [] },
-      { name: 'Loaded Fries', price: 9, tags: ['Vegetarian'] },
-      { name: 'Soft Drink', price: 6, tags: ['Vegetarian', 'Vegan'] },
+      { name: 'Vegan Beyond Burger', price: 16, tags: ['Vegan', 'Vegetarian'] },
+      { name: 'Garden Salad', price: 10, tags: ['Vegan', 'Vegetarian'] },
+      { name: 'Fruit Cup', price: 7, tags: ['Vegan', 'Gluten-Free'] },
+      { name: 'Kombucha', price: 8, tags: ['Vegan'] },
     ],
   },
   {
@@ -55,10 +55,10 @@ const CONCESSION_STANDS = [
     zone: 'West Concourses',
     waitTimeMinutes: 12,
     menu: [
-      { name: 'Classic Burger', price: 14, tags: [] },
-      { name: 'Chicken Tenders', price: 12, tags: [] },
-      { name: 'Loaded Fries', price: 9, tags: ['Vegetarian'] },
-      { name: 'Soft Drink', price: 6, tags: ['Vegetarian', 'Vegan'] },
+      { name: 'Cheese Pizza Slice', price: 8, tags: ['Vegetarian'] },
+      { name: 'Pepperoni Pizza Slice', price: 9, tags: [] },
+      { name: 'Garlic Knots', price: 6, tags: ['Vegetarian'] },
+      { name: 'Craft Beer', price: 12, tags: [] },
     ],
   },
 ];
