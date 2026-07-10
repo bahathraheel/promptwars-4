@@ -108,6 +108,12 @@ class AudioPlaybackQueue {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function LiveVoice() {
+  const announce = (text: string) => {
+    if (typeof (window as any).announceAccessibility === 'function') {
+      (window as any).announceAccessibility(text);
+    }
+  };
+
   const [status, setStatus] = useState<SessionStatus>('idle');
   const [targetLang, setTargetLang] = useState('en');
   const [cameraOn, setCameraOn] = useState(false);
@@ -191,6 +197,7 @@ export default function LiveVoice() {
     setStatus('connecting');
     setErrorMsg('');
     setTranscript([]);
+    announce("Connecting to Gemini Live Voice...");
 
     const ws = new WebSocket(`${WS_URL}/live?lang=${targetLang}`);
     ws.binaryType = 'arraybuffer';
@@ -229,8 +236,9 @@ export default function LiveVoice() {
                 `🟢 Live session started · ${msg.model ?? 'gemini-live'} · target: ${(msg.targetLang ?? 'en').toUpperCase()}`,
                 'system',
               );
+              announce("Gemini Live Voice session connected. Speak now.");
               break;
-
+ 
             case 'transcript':
               if (msg.text?.trim()) {
                 if (msg.text.startsWith('[You]:')) {
@@ -240,11 +248,12 @@ export default function LiveVoice() {
                 }
               }
               break;
-
+ 
             case 'error':
               setStatus('error');
               setErrorMsg(msg.message ?? 'Unknown error');
               addLine(`❌ ${msg.message ?? 'Connection error'}`, 'system');
+              announce(`Gemini Live error: ${msg.message}`);
               break;
           }
         } catch {
@@ -252,16 +261,18 @@ export default function LiveVoice() {
         }
       }
     };
-
+ 
     ws.onerror = () => {
       setStatus('error');
       setErrorMsg('WebSocket connection failed. Is the backend running?');
+      announce("Live voice connection failed. Please check if the backend is running.");
     };
-
+ 
     ws.onclose = () => {
       setStatus('idle');
       stopMic();
       addLine('Session ended.', 'system');
+      announce("Live Voice session disconnected.");
     };
   }, [targetLang, addLine, stopMic]);
 
@@ -308,6 +319,7 @@ export default function LiveVoice() {
 
       setMicActive(true);
       setStatus('listening');
+      announce("Microphone turned on. Speak now.");
 
       waveIntervalRef.current = setInterval(() => {
         setWaveAmplitudes(Array.from({ length: 20 }, () => Math.random() * 32 + 4));
@@ -315,6 +327,7 @@ export default function LiveVoice() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(`Mic error: ${msg}`);
+      announce(`Microphone error: ${msg}`);
     }
   }, [micActive]);
 

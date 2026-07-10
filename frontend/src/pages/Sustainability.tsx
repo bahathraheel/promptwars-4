@@ -18,6 +18,12 @@ const ROUTES = [
 ];
 
 export default function Sustainability() {
+  const announce = (text: string) => {
+    if (typeof (window as any).announceAccessibility === 'function') {
+      (window as any).announceAccessibility(text);
+    }
+  };
+
   const [item, setItem] = useState('');
   const [routeId, setRouteId] = useState('route-downtown');
   const [loading, setLoading] = useState(false);
@@ -29,11 +35,15 @@ export default function Sustainability() {
     setLoading(true);
     setError('');
     setResult(null);
+    announce(`Checking correct waste bin for: ${itemText}...`);
     try {
       const res = await api.sustainability(itemText.trim(), routeId);
       setResult(res);
+      announce(`Recommendation: Use the ${res.binColor} ${res.binLabel} bin. ${res.explanation}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Request failed');
+      const msg = err instanceof Error ? err.message : 'Request failed';
+      setError(msg);
+      announce(`Waste check failed: ${msg}`);
     } finally {
       setLoading(false);
     }

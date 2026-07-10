@@ -13,6 +13,12 @@ const GATES = [
 ];
 
 export default function WhatIf() {
+  const announce = (text: string) => {
+    if (typeof (window as any).announceAccessibility === 'function') {
+      (window as any).announceAccessibility(text);
+    }
+  };
+
   const [extraFans, setExtraFans] = useState(5000);
   const [gateId, setGateId] = useState('gate-3');
   const [minutesBefore, setMinutesBefore] = useState(30);
@@ -24,11 +30,15 @@ export default function WhatIf() {
     setLoading(true);
     setError('');
     setResult(null);
+    announce(`Running crowd surge simulation for ${extraFans.toLocaleString()} extra fans...`);
     try {
       const res = await api.whatIf(extraFans, gateId, minutesBefore);
       setResult(res);
+      announce(`Simulation complete. Bottlenecks: ${res.bottlenecks.join(', ')}.`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Simulation failed');
+      const msg = err instanceof Error ? err.message : 'Simulation failed';
+      setError(msg);
+      announce(`Simulation failed: ${msg}`);
     } finally {
       setLoading(false);
     }

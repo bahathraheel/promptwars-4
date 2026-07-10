@@ -67,6 +67,12 @@ function SignLanguageWidget({ lastMessage }: { lastMessage: string }) {
 
 // ── Main component ─────────────────────────────────────────────────────────
 export default function FanCopilot() {
+  const announce = (text: string) => {
+    if (typeof (window as any).announceAccessibility === 'function') {
+      (window as any).announceAccessibility(text);
+    }
+  };
+
   const [messages, setMessages] = useState<UiMessage[]>([
     {
       id: 'welcome',
@@ -104,6 +110,8 @@ export default function FanCopilot() {
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || loading) return;
 
+    announce(`Sending message: ${text.trim()}`);
+
     const userMsg: UiMessage = {
       id: `u-${Date.now()}`,
       role: 'user',
@@ -137,6 +145,7 @@ export default function FanCopilot() {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMsg]);
+      announce(`Response received: ${res.reply.replace(/\*\*/g, '').slice(0, 200)}`);
     } catch (err) {
       const errMsg: UiMessage = {
         id: `e-${Date.now()}`,
@@ -145,6 +154,7 @@ export default function FanCopilot() {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errMsg]);
+      announce("Error: Could not connect to the server. Please check your internet connection.");
     } finally {
       setLoading(false);
     }
@@ -199,7 +209,7 @@ export default function FanCopilot() {
               <button
                 key={v}
                 className={`toggle-pill ${activeMode === v && !pictogramMode ? 'active' : ''}`}
-                onClick={() => { setMode(v); setPictogramMode(false); }}
+                onClick={() => { setMode(v); setPictogramMode(false); announce(`Switched mode to ${label}`); }}
                 aria-pressed={mode === v && !pictogramMode}
                 aria-label={`Switch to ${label} mode`}
                 id={`mode-${v}`}
@@ -209,7 +219,7 @@ export default function FanCopilot() {
             ))}
             <button
               className={`toggle-pill ${pictogramMode ? 'active' : ''}`}
-              onClick={() => setPictogramMode((p) => !p)}
+              onClick={() => { const next = !pictogramMode; setPictogramMode(next); announce(next ? 'Enabled pictogram mode' : 'Disabled pictogram mode'); }}
               aria-pressed={pictogramMode}
               aria-label="Toggle pictogram mode for low-literacy support"
               id="mode-pictogram"

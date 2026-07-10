@@ -139,6 +139,12 @@ function ActionCard({
 
 // ── Main component ─────────────────────────────────────────────────────────
 export default function OpsDashboard() {
+  const announce = (text: string) => {
+    if (typeof (window as any).announceAccessibility === 'function') {
+      (window as any).announceAccessibility(text);
+    }
+  };
+
   const [report, setReport] = useState<SituationReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -167,8 +173,11 @@ export default function OpsDashboard() {
       setReport(res.report);
       setActions(res.report.proposedActions);
       setLastRefresh(new Date());
+      announce(`Situation report generated successfully. Proposed ${res.report.proposedActions.length} actions.`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate report');
+      const msg = err instanceof Error ? err.message : 'Failed to generate report';
+      setError(msg);
+      announce(`Error generating report: ${msg}`);
     } finally {
       setGenerating(false);
     }
@@ -178,8 +187,11 @@ export default function OpsDashboard() {
     try {
       const res = await api.decideAction(actionId, decision);
       setActions((prev) => prev.map((a) => (a.id === actionId ? res.action : a)));
+      announce(`Action was successfully ${decision}.`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Decision failed');
+      const msg = err instanceof Error ? err.message : 'Decision failed';
+      setError(msg);
+      announce(`Error deciding action: ${msg}`);
     }
   }, []);
 

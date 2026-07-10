@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import { auth } from './api/firebase';
 import {
   MessageCircle, LayoutDashboard, Activity, Leaf, BookOpen, Zap, LogOut, Radio,
+  Settings, Keyboard, Volume2, VolumeX, Eye, EyeOff, HelpCircle, X
 } from 'lucide-react';
 import FanCopilot from './pages/FanCopilot';
 import OpsDashboard from './pages/OpsDashboard';
@@ -43,6 +44,143 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <AppContent user={user} />
+    </BrowserRouter>
+  );
+}
+
+function AppContent({ user }: { user: User }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Accessibility State
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  
+  const [fontSize, setFontSize] = useState<'standard' | 'large' | 'xlarge'>(() => {
+    return (localStorage.getItem('access-font-size') as any) || 'standard';
+  });
+  
+  const [theme, setTheme] = useState<'standard' | 'contrast-dark' | 'contrast-light'>(() => {
+    return (localStorage.getItem('access-theme') as any) || 'standard';
+  });
+
+  const [dyslexiaFont, setDyslexiaFont] = useState<boolean>(() => {
+    return localStorage.getItem('access-dyslexia') === 'true';
+  });
+
+  const [screenReaderActive, setScreenReaderActive] = useState<boolean>(() => {
+    return localStorage.getItem('access-tts') === 'true';
+  });
+
+  const [announcement, setAnnouncement] = useState('');
+
+  const announce = (text: string) => {
+    setAnnouncement(text);
+    if (screenReaderActive && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Expose global announcement function
+  useEffect(() => {
+    (window as any).announceAccessibility = (text: string) => {
+      announce(text);
+    };
+    return () => {
+      try { delete (window as any).announceAccessibility; } catch { /* ignore */ }
+    };
+  }, [screenReaderActive, fontSize, theme, dyslexiaFont]);
+
+  // Keyboard Navigation & Control Listeners
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey) {
+        if (e.key === '1') { e.preventDefault(); navigate('/'); }
+        if (e.key === '2') { e.preventDefault(); navigate('/sustainability'); }
+        if (e.key === '3') { e.preventDefault(); navigate('/live'); }
+        if (e.key === '4') { e.preventDefault(); navigate('/ops'); }
+        if (e.key === '5') { e.preventDefault(); navigate('/whatif'); }
+        if (e.key === '6') { e.preventDefault(); navigate('/audit'); }
+      }
+      if (e.key === 'Escape') {
+        setPanelOpen(false);
+        setShortcutsOpen(false);
+      }
+      if (e.key === '?' && e.shiftKey) {
+        e.preventDefault();
+        setShortcutsOpen(prev => !prev);
+      }
+      if (e.altKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        const input = document.getElementById('chat-input') || document.getElementById('item-input');
+        if (input) {
+          input.focus();
+          announce('Focused input field');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate, screenReaderActive]);
+
+  // Page tracking announcement
+  useEffect(() => {
+    const pageName = 
+      location.pathname === '/' ? 'Fan Copilot' :
+      location.pathname === '/sustainability' ? 'Sustainability Assistant' :
+      location.pathname === '/live' ? 'Live Voice Copilot' :
+      location.pathname === '/ops' ? 'Operations Dashboard' :
+      location.pathname === '/whatif' ? 'What If Simulation' :
+      location.pathname === '/audit' ? 'Audit Log' : 'Stadium Pulse';
+    announce(`Loaded page: ${pageName}`);
+  }, [location.pathname]);
+
+  // CSS Class sync effects
+  useEffect(() => {
+    const html = document.documentElement;
+    html.classList.remove('font-scale-large', 'font-scale-xlarge');
+    if (fontSize === 'large') html.classList.add('font-scale-large');
+    if (fontSize === 'xlarge') html.classList.add('font-scale-xlarge');
+    localStorage.setItem('access-font-size', fontSize);
+  }, [fontSize]);
+
+  useEffect(() => {
+    const body = document.body;
+    body.classList.remove('theme-high-contrast-dark', 'theme-high-contrast-light');
+    if (theme === 'contrast-dark') body.classList.add('theme-high-contrast-dark');
+    if (theme === 'contrast-light') body.classList.add('theme-high-contrast-light');
+    localStorage.setItem('access-theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const body = document.body;
+    if (dyslexiaFont) {
+      body.classList.add('font-dyslexia');
+    } else {
+      body.classList.remove('font-dyslexia');
+    }
+    localStorage.setItem('access-dyslexia', String(dyslexiaFont));
+  }, [dyslexiaFont]);
+
+  useEffect(() => {
+    localStorage.setItem('access-tts', String(screenReaderActive));
+    if (screenReaderActive) {
+      announce('Voice narration enabled');
+    } else {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+  }, [screenReaderActive]);
+
+  return (
+    <>
+      {/* Screen Reader live announcer */}
+      <div className="sr-only" aria-live="assertive">
+        {announcement}
+      </div>
+
       {/* Accessibility: skip to main content */}
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
@@ -173,7 +311,190 @@ export default function App() {
           </Routes>
         </main>
       </div>
-    </BrowserRouter>
+
+      {/* ── Floating Accessibility Toolbar ── */}
+      <div className="accessibility-widget" role="region" aria-label="Accessibility panel">
+        {panelOpen && (
+          <div className="accessibility-panel-card card">
+            <h4>
+              <Settings size={18} color="var(--color-primary)" aria-hidden="true" />
+              Accessibility Panel
+            </h4>
+            
+            {/* Font Sizing Option */}
+            <div className="accessibility-option-group">
+              <span className="accessibility-option-label">Text Size</span>
+              <div className="accessibility-btn-row">
+                <button
+                  className={fontSize === 'standard' ? 'active' : ''}
+                  onClick={() => { setFontSize('standard'); }}
+                  aria-label="Standard text size"
+                >
+                  A
+                </button>
+                <button
+                  className={fontSize === 'large' ? 'active' : ''}
+                  onClick={() => { setFontSize('large'); }}
+                  aria-label="Large text size"
+                  style={{ fontSize: '1rem' }}
+                >
+                  A+
+                </button>
+                <button
+                  className={fontSize === 'xlarge' ? 'active' : ''}
+                  onClick={() => { setFontSize('xlarge'); }}
+                  aria-label="Extra large text size"
+                  style={{ fontSize: '1.2rem' }}
+                >
+                  A++
+                </button>
+              </div>
+            </div>
+
+            {/* Contrast Themes Option */}
+            <div className="accessibility-option-group">
+              <span className="accessibility-option-label">Contrast Theme</span>
+              <div className="accessibility-btn-row">
+                <button
+                  className={theme === 'standard' ? 'active' : ''}
+                  onClick={() => { setTheme('standard'); }}
+                  aria-label="Standard contrast theme"
+                >
+                  Standard
+                </button>
+                <button
+                  className={theme === 'contrast-dark' ? 'active' : ''}
+                  onClick={() => { setTheme('contrast-dark'); }}
+                  aria-label="High contrast dark theme"
+                >
+                  HC Dark
+                </button>
+                <button
+                  className={theme === 'contrast-light' ? 'active' : ''}
+                  onClick={() => { setTheme('contrast-light'); }}
+                  aria-label="High contrast light theme"
+                >
+                  HC Light
+                </button>
+              </div>
+            </div>
+
+            {/* Dyslexia Friendly Option */}
+            <div className="accessibility-option-group">
+              <span className="accessibility-option-label">Dyslexia Support</span>
+              <div className="accessibility-btn-row">
+                <button
+                  className={dyslexiaFont ? 'active' : ''}
+                  onClick={() => { setDyslexiaFont(prev => !prev); }}
+                  aria-label="Toggle dyslexia friendly font spacing"
+                >
+                  {dyslexiaFont ? 'Enabled' : 'Disabled'}
+                </button>
+              </div>
+            </div>
+
+            {/* Screen Reader Voice Toggle */}
+            <div className="accessibility-option-group">
+              <span className="accessibility-option-label">Voice Narration</span>
+              <div className="accessibility-btn-row">
+                <button
+                  className={screenReaderActive ? 'active' : ''}
+                  onClick={() => setScreenReaderActive(prev => !prev)}
+                  aria-label="Toggle text to speech narration"
+                >
+                  {screenReaderActive ? <Volume2 size={14} aria-hidden="true" /> : <VolumeX size={14} aria-hidden="true" />}
+                  {screenReaderActive ? 'On' : 'Off'}
+                </button>
+              </div>
+            </div>
+
+            {/* Helper modal toggle */}
+            <button
+              className="btn-ghost"
+              onClick={() => setShortcutsOpen(true)}
+              style={{ fontSize: '0.75rem', justifyContent: 'center' }}
+              aria-label="View keyboard shortcuts"
+            >
+              <Keyboard size={14} aria-hidden="true" /> Keyboard Shortcuts
+            </button>
+          </div>
+        )}
+
+        <button
+          className="accessibility-toggle-btn"
+          onClick={() => setPanelOpen(prev => !prev)}
+          aria-expanded={panelOpen}
+          aria-label="Open accessibility control settings"
+        >
+          {panelOpen ? <X size={24} aria-hidden="true" /> : <Settings size={24} aria-hidden="true" />}
+        </button>
+      </div>
+
+      {/* ── Keyboard Shortcuts Modal ── */}
+      {shortcutsOpen && (
+        <div className="shortcut-list-modal" role="dialog" aria-modal="true" aria-labelledby="shortcut-title">
+          <div className="shortcut-modal-content">
+            <h3 id="shortcut-title">
+              <Keyboard size={20} color="var(--color-primary)" aria-hidden="true" />
+              Keyboard Navigation Shortcuts
+            </h3>
+            <table>
+              <thead>
+                <tr className="sr-only">
+                  <th>Shortcut key</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><kbd>Alt + 1</kbd></td>
+                  <td>Go to Fan Copilot</td>
+                </tr>
+                <tr>
+                  <td><kbd>Alt + 2</kbd></td>
+                  <td>Go to Sustainability Assistant</td>
+                </tr>
+                <tr>
+                  <td><kbd>Alt + 3</kbd></td>
+                  <td>Go to Live Voice Copilot</td>
+                </tr>
+                <tr>
+                  <td><kbd>Alt + 4</kbd></td>
+                  <td>Go to Operations Control Room</td>
+                </tr>
+                <tr>
+                  <td><kbd>Alt + 5</kbd></td>
+                  <td>Go to What-If Simulation</td>
+                </tr>
+                <tr>
+                  <td><kbd>Alt + 6</kbd></td>
+                  <td>Go to Audit Log</td>
+                </tr>
+                <tr>
+                  <td><kbd>Alt + S</kbd></td>
+                  <td>Focus main search/input field</td>
+                </tr>
+                <tr>
+                  <td><kbd>Shift + ?</kbd></td>
+                  <td>Open / close shortcuts list</td>
+                </tr>
+                <tr>
+                  <td><kbd>Esc</kbd></td>
+                  <td>Close modals / panels</td>
+                </tr>
+              </tbody>
+            </table>
+            <button
+              className="btn-primary"
+              onClick={() => setShortcutsOpen(false)}
+              style={{ alignSelf: 'flex-end' }}
+              aria-label="Close shortcuts list"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
-
