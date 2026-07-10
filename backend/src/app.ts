@@ -11,10 +11,11 @@
 
 import 'dotenv/config';
 import express from 'express';
-import helmet from 'helmet';
 import cors from 'cors';
+import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import crypto from 'crypto';
 
 import chatRouter from './routes/chat.js';
 import opsRouter from './routes/ops.js';
@@ -44,6 +45,20 @@ app.use(
   }),
 );
 
+// Permissions Policy Header
+app.use((_req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), geolocation=()');
+  next();
+});
+
+// Request-ID Correlation Header Tracer
+app.use((req, res, next) => {
+  const reqId = (req.headers['x-request-id'] as string) || crypto.randomUUID();
+  req.headers['x-request-id'] = reqId;
+  res.setHeader('X-Request-ID', reqId);
+  next();
+});
+
 // ─── CORS ─────────────────────────────────────────────────────────────────
 const rawOrigin = process.env['CORS_ORIGIN'] ?? 'http://localhost:5173';
 const allowedOrigins = [
@@ -63,22 +78,55 @@ app.use(
       }
     },
     methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
+    exposedHeaders: ['X-Request-ID'],
   }),
 );
 
-// ─── Rate limiting ────────────────────────────────────────────────────────
-const limiter = rateLimit({
-  windowMs: parseInt(process.env['RATE_LIMIT_WINDOW_MS'] ?? '60000', 10),
-  max: parseInt(process.env['RATE_LIMIT_MAX_REQUESTS'] ?? '60', 10),
+// ─── 2-Tier Rate limiting ──────────────────────────────────────────────────
+const generalLimiter = rateLimit({
+  windowMs: 60000,
+  max: 100, // General limit: 100 requests per minute
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Too many requests. Please try again shortly.' },
+  message: { error: 'Too many requests. Please try again shortly.', code: 'RATE_LIMIT_EXCEEDED' },
 });
-app.use('/api/', limiter);
 
-// ─── Body parsing ─────────────────────────────────────────────────────────
+const strictLimiter = rateLimit({
+  windowMs: 60000,
+  max: 15, // Sensitive limit: 15 requests per minute
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Strict rate limit exceeded. Please slow down.', code: 'RATE_LIMIT_EXCEEDED' },
+});
+
+// Tier 1: General limiter on all API endpoints
+app.use('/api/', generalLimiter);
+
+// Tier 2: Strict limiters on sensitive endpoints
+app.use('/api/chat', strictLimiter);
+app.use('/api/match/commentary', strictLimiter);
+app.use('/api/concessions/order', strictLimiter);
+app.use('/api/volunteer/incident', strictLimiter);
+
+// ─── Body parsing & Content-Type Guards ───────────────────────────────────
 app.use(compression());
+
+// Content-Type 415 Guard
+app.use((req, res, next) => {
+  if (req.method === 'POST') {
+    const contentType = req.headers['content-type'];
+    if (!contentType || !contentType.toLowerCase().includes('application/json')) {
+      res.status(415).json({
+        error: 'Unsupported Media Type: Payload must be application/json',
+        code: 'UNSUPPORTED_MEDIA_TYPE',
+      });
+      return;
+    }
+  }
+  next();
+});
+
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: false, limit: '16kb' }));
 
@@ -101,10 +149,15 @@ app.use((_req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
-// ─── Global error handler ─────────────────────────────────────────────────
+// ─── Global error handler (Suppress Production Leakages) ──────────────────
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('[Server Error]', err.message);
-  res.status(500).json({ error: 'Internal server error' });
+  const isProd = process.env['NODE_ENV'] === 'production';
+  res.status(500).json({
+    error: isProd ? 'Internal server error' : err.message,
+    code: 'INTERNAL_SERVER_ERROR',
+    ...(isProd ? {} : { stack: err.stack }),
+  });
 });
 
 export default app;
